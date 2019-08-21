@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Sticky Image Effect </title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Sticky Image Effect </title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="content">
+</div>
+<div class="cursor"></div>
+<div class="dot"></div>
+<script id="vs" type="f">
+  // https://tympanus.net/codrops/2019/04/10/how-to-create-a-sticky-image-effect-with-three-js/comment-page-1/#comment-476238
+  uniform float u_progress;
+  uniform float u_direction;
+  uniform float u_waveIntensity;
+  uniform float u_offset;
+  uniform float u_time;
+  
+  varying vec2 vUv;
+  void main(){
+    
+    vec3 pos = position.xyz;
+    float dist = length(uv - .5);
+    float maxDist = length(vec2(.5));
+    float normDist = dist / maxDist;
+    
+    float stickOut = normDist;
+    float stickIn = -normDist;
+    float stickEff = mix(stickOut, stickIn, u_direction);
+    
+    float stick = .5;
+    
+    float waveIn = u_progress * (1./stick);
+    float waveOut = -(u_progress - 1.) * (1./(1. - stick));
+    float stickProg = min(waveIn, waveOut);
+    
+    float offIn = clamp(waveIn, 0., 1.);
+    float offOut = clamp(1. - waveOut, 0., 1.);
+    float offProg = mix(offIn, offOut, u_direction);
+
+    pos.z += stickEff * u_offset * stickProg - u_offset * offProg;
+    
+    pos.z += sin(dist * 8. -  u_time * 10.) * u_waveIntensity;
+    
+    vUv = uv;
+    
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+  }
+</script>
+<script id="fs" type="f">
+  
+  #define S(a,b,n) smoothstep(a,b,n)
+  #define pi2 6.28318530718
+  #define pi 3.14159265359
+  
+  uniform float u_time;
+  uniform float u_volatility;
+  
+  uniform vec2 u_res;
+  uniform vec2 u_mouse;
+  uniform vec2 u_directionMouse;
+  uniform vec2 u_textureFactor;
+  uniform vec2 u_texture2Factor;
+
+  uniform sampler2D u_text0;
+
+  varying vec2 vUv;
+  
+  vec2 centeredAspectRatio(vec2 uvs, vec2 factor){
+    return uvs * factor - factor / 2. + 0.5;
+  }
+  
+  void main() {
+    vec2 uv = vUv;
+    vec2 st = (gl_FragCoord.xy - .5 * u_res) / min(u_res.x, u_res.y) * vec2(.4, 1.);
+    vec2 mouse_normalized = (u_mouse - .5 * u_res) / min(u_res.x, u_res.y) * vec2(.4, 1.);
+    
+    float vel = u_volatility; 
+
+    float dist = length(mouse_normalized - st);
+    float m_color = S(.2, .01, dist);
+       
+    vec4 tex1 = vec4(1.);
+    
+    vel += vel * 2.;
+    
+    uv.x -= (sin(uv.y) * m_color * vel / 100.) * u_directionMouse.x;
+    uv.y -= (sin(uv.x) * m_color * vel / 100.) * u_directionMouse.y;
+    tex1.r = texture2D(u_text0, centeredAspectRatio(uv, u_textureFactor)).r;
+    
+    uv.x -= (sin(uv.y) * m_color * vel / 150.) * u_directionMouse.x;
+    uv.y -= (sin(uv.x) * m_color * vel / 150.) * u_directionMouse.y;
+    tex1.g = texture2D(u_text0, centeredAspectRatio(uv, u_textureFactor)).g;
+    
+    uv.x -= (sin(uv.y) * m_color * vel / 300.) * u_directionMouse.x;
+    uv.y -= (sin(uv.x) * m_color * vel / 300.) * u_directionMouse.y;
+    tex1.b = texture2D(u_text0, centeredAspectRatio(uv, u_textureFactor)).b;
+           
+    gl_FragColor = tex1;
+  }
+</script>
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js'></script>
+<script src='https://codepen.io/AlainBarrios/pen/xeEdPO.js'></script>
+<script  src="./script.js"></script>
+
+</body>
+</html>
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js'></script>
+<script src='https://codepen.io/AlainBarrios/pen/xeEdPO.js'></script>
+<script  src="./script.js"></script>
+
+</body>
+</html>

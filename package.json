@@ -1,0 +1,14 @@
+{
+  "name": "sticky-image-effect",
+  "version": "1.0.0",
+  "description": "_A Pen created at CodePen.io. Original URL: [https://codepen.io/AlainBarrios/pen/JVWOYd](https://codepen.io/AlainBarrios/pen/JVWOYd).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "three": "^0.107.0"
+  }
+}
